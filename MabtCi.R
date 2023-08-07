@@ -20,7 +20,11 @@ MabtCi <- function(
   
   select_preds <- preds[, select_id]
   if (measure == "class") {
-    select_preds <- ((select_preds > cls_thresh) * 1.0 == labs) * 1.0
+    if (data.table::between(select_preds, 0, 1, incbounds = FALSE) %>% min) {
+      select_preds <- ((select_preds > cls_thresh) * 1.0 == labs) * 1.0
+    } else {
+      select_preds <- (select_preds == labs) * 1.0
+    }
   }
   
   tau_range <- switch(measure, class = c(-10, 0), auc = c(-20, 0))
@@ -46,7 +50,7 @@ MabtCi <- function(
   
   .CalibTau <- function(.tau) {
     p <- .EstPval(.tau)$p
-    obj <- (p - alpha) + 1000 * (p > alpha)
+    obj <- (p - alpha) + 1000 * (p > alpha)  # conservative estimation
     return(obj)
   }
   
