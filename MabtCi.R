@@ -41,7 +41,7 @@ MabtCi <- function(
       imp_weights <- rep(
         tilt_weights * length(select_preds), boot$R)^t(boot::boot.array(boot)) %>% 
         apply(2, prod)
-      tilt_perform <- spatstat.geom::ewcdf(t, imp_weights)(t0)
+      tilt_perform <- spatstat.univar::ewcdf(t, imp_weights)(t0)
       p <- 1 - .MaxEcdf(tilt_perform)
     }
     return(list(
